@@ -1,18 +1,50 @@
-#!/usr/bin/python3
-from sys import argv
+#!/bin/bash
 
-with open(argv[1]) as f:
- for line in f:
- num = int(line)
- print("{:d}+",format(num), end+'')
- if num % 2 == 0:
-     print("{}*2".format(num//2))
-     continue
- for i in range(3,num,2):
-     if num % i == 0;
-     factor = nu//i
-     for j in range (3, factor, 2):
-         if factir % j == 0 or j == 0:
-             break
-         print("{}*{}".format(factor, i))
-         break
+# RSA Factoring Challenge - Prime Factorization Script
+
+# Check if the file is provided as an argument
+if [ -z "$1" ]; then
+    echo "Usage: $0 <file>"
+    exit 1
+fi
+
+file=$1
+
+# Check if the file exists
+if [ ! -f "$file" ]; then
+    echo "Error: File $file not found."
+    exit 1
+fi
+
+# Function to check if a number is prime
+is_prime() {
+    num=$1
+    if [ "$num" -le 1 ]; then
+        return 1
+    fi
+    for ((i=2; i*i<=num; i++)); do
+        if [ $((num % i)) -eq 0 ]; then
+            return 1
+        fi
+    done
+    return 0
+}
+
+# Function to factorize a number into two primes
+factorize() {
+    n=$1
+    for ((p=2; p*p<=n; p++)); do
+        if [ $((n % p)) -eq 0 ]; then
+            q=$((n / p))
+            if is_prime "$p" && is_prime "$q"; then
+                echo "$n=$p*$q"
+                return
+            fi
+        fi
+    done
+}
+
+# Read the number from the file and factorize it
+while read -r number; do
+    factorize "$number"
+done < "$file"
