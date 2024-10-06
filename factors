@@ -1,7 +1,34 @@
-#!/usr/bin/bash
-FILE=$1
-while read NUMBERS;
-do
-   factors=($(factor $NUMBERS))
-   echo "$NUMBERS=$(($NUMBERS/${factors[1]}))*${factors[1]}"
-done < $FILE
+#include <stdio.h>
+#include <stdlib.h>
+
+void factorize(long n) {
+    long p, q;
+    for (p = 2; p <= n / 2; p++) {
+        if (n % p == 0) {
+            q = n / p;
+            printf("%ld=%ld*%ld\n", n, p, q);
+            return;
+        }
+    }
+}
+
+int main(int argc, char *argv[]) {
+    if (argc != 2) {
+        fprintf(stderr, "Usage: factors <file>\n");
+        return 1;
+    }
+
+    FILE *file = fopen(argv[1], "r");
+    if (!file) {
+        perror("Could not open file");
+        return 1;
+    }
+
+    long number;
+    while (fscanf(file, "%ld", &number) != EOF) {
+        factorize(number);
+    }
+
+    fclose(file);
+    return 0;
+}
