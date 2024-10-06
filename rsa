@@ -1,50 +1,31 @@
-#!/bin/bash
+#!/usr/bin/python3
+import sys
+import math
 
-# RSA Factoring Challenge - Prime Factorization Script
+def is_prime(n):
+    if n <= 1:
+        return False
+    for i in range(2, int(math.sqrt(n)) + 1):
+        if n % i == 0:
+            return False
+    return True
 
-# Check if the file is provided as an argument
-if [ -z "$1" ]; then
-    echo "Usage: $0 <file>"
-    exit 1
-fi
-
-file=$1
-
-# Check if the file exists
-if [ ! -f "$file" ]; then
-    echo "Error: File $file not found."
-    exit 1
-fi
-
-# Function to check if a number is prime
-is_prime() {
-    num=$1
-    if [ "$num" -le 1 ]; then
-        return 1
-    fi
-    for ((i=2; i*i<=num; i++)); do
-        if [ $((num % i)) -eq 0 ]; then
-            return 1
-        fi
-    done
-    return 0
-}
-
-# Function to factorize a number into two primes
-factorize() {
-    n=$1
-    for ((p=2; p*p<=n; p++)); do
-        if [ $((n % p)) -eq 0 ]; then
-            q=$((n / p))
-            if is_prime "$p" && is_prime "$q"; then
-                echo "$n=$p*$q"
+def rsa_factor(n):
+    for i in range(2, n // 2 + 1):
+        if n % i == 0 and is_prime(i):
+            quotient = n // i
+            if is_prime(quotient):
+                print(f"{n}={i}*{quotient}")
                 return
-            fi
-        fi
-    done
-}
 
-# Read the number from the file and factorize it
-while read -r number; do
-    factorize "$number"
-done < "$file"
+if len(sys.argv) != 2:
+    print("Usage: rsa <file>")
+    sys.exit(1)
+
+try:
+    with open(sys.argv[1], 'r') as file:
+        num = int(file.readline().strip())
+        rsa_factor(num)
+except FileNotFoundError:
+    print(f"Error: {sys.argv[1]} not found")
+    sys.exit(1)
