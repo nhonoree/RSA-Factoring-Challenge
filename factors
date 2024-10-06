@@ -1,34 +1,21 @@
-#include <stdio.h>
-#include <stdlib.h>
+#!/usr/bin/python3
+import sys
 
-void factorize(long n) {
-    long p, q;
-    for (p = 2; p <= n / 2; p++) {
-        if (n % p == 0) {
-            q = n / p;
-            printf("%ld=%ld*%ld\n", n, p, q);
-            return;
-        }
-    }
-}
+def factorize(n):
+    for i in range(2, n // 2 + 1):
+        if n % i == 0:
+            print(f"{n}={i}*{n//i}")
+            return
 
-int main(int argc, char *argv[]) {
-    if (argc != 2) {
-        fprintf(stderr, "Usage: factors <file>\n");
-        return 1;
-    }
+if len(sys.argv) != 2:
+    print("Usage: factors <file>")
+    sys.exit(1)
 
-    FILE *file = fopen(argv[1], "r");
-    if (!file) {
-        perror("Could not open file");
-        return 1;
-    }
-
-    long number;
-    while (fscanf(file, "%ld", &number) != EOF) {
-        factorize(number);
-    }
-
-    fclose(file);
-    return 0;
-}
+try:
+    with open(sys.argv[1], 'r') as file:
+        for line in file:
+            num = int(line.strip())
+            factorize(num)
+except FileNotFoundError:
+    print(f"Error: {sys.argv[1]} not found")
+    sys.exit(1)
